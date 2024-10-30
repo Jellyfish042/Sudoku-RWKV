@@ -21,7 +21,7 @@ Model specifications:
 - Vocabulary size: 140
 - Architecture: 8 layers, 512 dimensions
 
-The model includes a simple improvement for better performance (see `model.py` line 372). Corresponding modifications were made in the inference code (`rwkv_model.py` lines 852).
+The model includes a simple improvement for better performance (see `model.py` line 372). Corresponding modifications were made in the inference code (`rwkv_model.py` lines 852, 893-896).
 
 ## Training
 
