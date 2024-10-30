@@ -1,7 +1,7 @@
 import os
 
 os.environ["RWKV_JIT_ON"] = "1"
-os.environ["RWKV_CUDA_ON"] = "1"
+os.environ["RWKV_CUDA_ON"] = "0"
 
 from rwkv_model import RWKV
 from rwkv.utils import PIPELINE, PIPELINE_ARGS

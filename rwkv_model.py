@@ -890,11 +890,6 @@ class RWKV(MyModule):
 
         w = t_decay.view(1, H, N, 1) + (torch.tanh(wx @ td_w1) @ td_w2).float().view(T, H, N, 1)
         
-        # added this block
-        w_for_k = torch.clamp(w, max=0).exp()  # [T, H, N, 1]
-        w_for_k = w_for_k.squeeze(-1).permute(1, 2, 0)  # [H, N, T]
-        k = k * w_for_k
-        
         w = torch.exp(-torch.exp(w.float()))
         out = torch.empty((T, H, N), dtype=r.dtype, device=r.device)
         for t in range(T):
