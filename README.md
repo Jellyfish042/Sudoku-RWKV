@@ -45,9 +45,9 @@ I tested the model on samples of varying difficulty levels, with results shown b
 
 Note: Difficulty is measured by the number of empty cells in the Sudoku puzzle
 
-![Accuracy Results](./assets/acc.png)
+![Accuracy Results](./assets/perfect_solution_rate.png)
 
-![Token Usage](./assets/token.png)
+![Token Usage](./assets/token_usage.png)
 
 ## Limitations
 
