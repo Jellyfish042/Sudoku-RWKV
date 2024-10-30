@@ -838,7 +838,7 @@ Otherwise, a new seed will be generated each time, resulting in a different Sudo
 default_difficulty = 40
 base_seed = None
 default_max_token_count = 500000
-break_when_something_wrong = True  # real-time verification
+break_when_something_wrong = False  # real-time verification
 
 current_seed = base_seed if base_seed is not None else int(time.time())
 grid, solved_grid = generate_sudoku(difficulty=default_difficulty, seed=current_seed)
@@ -913,7 +913,7 @@ while True:
             logger, is_completed = solve_sudoku_using_model(copy.deepcopy(grid_i), 
                                                             verbose=False, 
                                                             max_token_count=default_max_token_count, 
-                                                            real_time_verification=break_when_something_wrong)
+                                                            real_time_verification=False)
             cot = logger.log
             token_usage += len(tokenizer.encode(cot))
             result_correct = check_cot(grid_i, solved_grid_i, cot, verify_intermediate_step=False, verbose=False)
