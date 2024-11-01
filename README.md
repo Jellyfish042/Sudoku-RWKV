@@ -2,6 +2,8 @@
 
 A specialized RWKV model for solving Sudoku puzzles.
 
+![menu](./assets/menu.png)
+
 ## Requirements
 
 - rwkv
