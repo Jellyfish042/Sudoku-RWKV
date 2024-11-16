@@ -204,102 +204,90 @@ class Sudoku:
 
 
 def solve_sudoku(sudoku, logger):
-    logger.print_and_log(f"<input>\n{sudoku.grid}\n")
+    logger.print_and_log(f"<input>\n{format_board(sudoku.grid)}\n</input>\n")
     logger.print_and_log(f"<reasoning>")
     stack = []
     while True:
         
         # check state
-        logger.print_and_log("<check state>")
-        logger.print_and_log(f"grid = {format_board(sudoku.grid)}")
+        logger.print_and_log(f"<board>\n{format_board(sudoku.grid)}\n</board>")
+        logger.print_and_log(f"<stack>\n{format_stack(stack)}\n</stack>")
         sudoku.update_possible_value_matrix()
-        logger.print_and_log(f"possible values estmation = {clean_possible_value_matrix(sudoku.possible_value_matrix)}")
+        logger.print_and_log(f"=> Number of possibilities (estimate): {clean_possible_value_matrix(sudoku.possible_value_matrix)}")
         if sudoku.find_min_possible_value_position() is None:
-            logger.print_and_log("# sudoku is solved")
-            logger.print_and_log('</reasoning>')
+            logger.print_and_log("[Sudoku is solved]")
             break
         else:
-            logger.print_and_log("# sudoku is not solved")
-        logger.print_and_log(f"stack = {format_stack(stack)}")
-        logger.print_and_log("</check state>")
+            logger.print_and_log("[Sudoku is not solved]")
 
         # fill number
         logger.print_and_log("<fill number>")
         row, col = sudoku.find_min_possible_value_position()
-        logger.print_and_log("# find cell and possible values")
-        logger.print_and_log(f"minimum estimated value = -{sudoku.possible_value_matrix[row][col]}-")
-        logger.print_and_log(f"target cell = ({row}, {col}) ")
+        logger.print_and_log(f"=> Minimum estimated value: ({row}, {col}) #{sudoku.possible_value_matrix[row][col]}, ")
         all_impossible_values = []
-        logger.print_and_log("impossible values in row:")
+        logger.print_and_log("=> Impossible values in row: ", end="")
         for j, value in enumerate(sudoku.grid[row]):
             if value != 0:
-                logger.print_and_log(f"({row}, {j}) {value}")
+                logger.print_and_log(f"{value} ", end="")
                 all_impossible_values.append((row, j, value))
-        logger.print_and_log("impossible values in column:")
+        logger.print_and_log("")
+        logger.print_and_log("=> Impossible values in column: ", end="")
         for i in range(9):
             value = sudoku.grid[i][col]
             if value != 0:
-                logger.print_and_log(f"({i}, {col}) {value}")
+                logger.print_and_log(f"{value} ", end="")
                 all_impossible_values.append((i, col, value))
-        logger.print_and_log("impossible values in box:")
+        logger.print_and_log("")
+        logger.print_and_log("=> Impossible values in box: ", end="")
         box_row, box_col = 3 * (row // 3), 3 * (col // 3)
         for i in range(box_row, box_row + 3):
             for j in range(box_col, box_col + 3):
                 value = sudoku.grid[i][j]
                 if value != 0:
-                    logger.print_and_log(f"({i}, {j}) {value}")
+                    logger.print_and_log(f"{value} ", end="")
                     all_impossible_values.append((i, j, value))
+        logger.print_and_log("")
 
-        logger.print_and_log(f"all impossible values:")
-        for num in range(1, 10):
-            logger.print_and_log(f"{num}: ", end="")
-            no_impossible_value = True
-            for cell in all_impossible_values:
-                if cell[2] == num:
-                    logger.print_and_log(f"{cell[0], cell[1]} ", end="")
-                    no_impossible_value = False
-            if no_impossible_value:
-                logger.print_and_log("None", end="")
-            logger.print_and_log("")
-        possible_values = list(set(range(1, 10)) - set(value for _, _, value in all_impossible_values))
-        logger.print_and_log(f"possible values = {possible_values}")
+        all_impossible_values = sorted(list(set([value for _, _, value in all_impossible_values])))
+        all_impossible_values_str = ' '.join(str(value) for value in all_impossible_values) + ' '
+        logger.print_and_log(f"=> All impossible values: {all_impossible_values_str}")
+        
+        possible_values = sorted(list(set(range(1, 10)) - set(all_impossible_values)))
+        possible_values_str = ' '.join(str(value) for value in possible_values) + ' ' if possible_values else 'None'
+        logger.print_and_log(f"=> All possible values: {possible_values_str}")
 
         if not possible_values:
             # backtrack until possible value exists
-            logger.print_and_log("# no possible value exists")
-            logger.print_and_log("# start backtracking")
+            logger.print_and_log("[No possible value exists]")
             while True:
-                logger.print_and_log("# pop from stack")
                 last = stack.pop()
                 row, col = last["cell"]
                 possible_values = last["possible_values"]
-                logger.print_and_log(f"target cell = ({row}, {col}) ")
-                logger.print_and_log(f"possible values = {possible_values}")
+                logger.print_and_log(f"=> Backtracking, pop from stack: ({row}, {col}) ")
+                possible_values_str = ' '.join(str(value) for value in possible_values) + ' ' if possible_values else 'None'
+                logger.print_and_log(f"=> Possible values: {possible_values_str}")
                 if possible_values:
                     break
                 else:
-                    logger.print_and_log("# no possible value exists")
-                    logger.print_and_log("# reset cell")
-                    logger.print_and_log(f"grid({row}, {col})  = 0")
+                    logger.print_and_log(f"[No possible value exists, reset cell]")
+                    logger.print_and_log(f"> Fill cell ({row}, {col}) 0 ")
                     sudoku.grid[row][col] = 0
-            logger.print_and_log(f"# update stack")
-            logger.print_and_log(f"stack = {format_stack(stack)}")
             
-        logger.print_and_log("# possible value exists")
+        logger.print_and_log("[Possible value exists]")
         num = possible_values[0]
         sudoku.grid[row][col] = num
         possible_values.remove(num)
         stack.append({"cell": (row, col), "possible_values": possible_values})
 
-        logger.print_and_log(f"# fill cell")
-        logger.print_and_log(f"grid({row}, {col})  = {num}")
-        logger.print_and_log(f"# remaining possible values")
-        logger.print_and_log(f"possible values = {possible_values}")
-        logger.print_and_log(f"# update stack")
-        logger.print_and_log(f"stack = {format_stack(stack)}")
-
+        logger.print_and_log(f"> Fill cell ({row}, {col}) {num} ")
+        remaining_possible_values = ' '.join(str(value) for value in possible_values) + ' ' if possible_values else '- '
+        logger.print_and_log(f"=> Remaining possible values: {remaining_possible_values}")
+        logger.print_and_log(f"[update stack]")
+        logger.print_and_log(f"<stack>\n{format_stack(stack)}\n</stack>")
         logger.print_and_log("</fill number>")
-    logger.print_and_log(f"\n<output>\n{sudoku.grid}\n</output>\n\n", end="")
+        
+    logger.print_and_log('</reasoning>')
+    logger.print_and_log(f"\n<output>\n{format_board(sudoku.grid)}\n</output>\n\n", end="")
 
 
 def check_solution(solution, gt):
@@ -311,8 +299,21 @@ def check_solution(solution, gt):
     return True
 
 
-def generate_single_sudoku(minimum_difficulty, maximum_difficulty, seed=None):
-    difficulty = random.randint(minimum_difficulty, maximum_difficulty)
+def weighted_sample(ranges):
+    rand = random.random()
+    cumsum = 0
+    
+    for prob, (start, end) in ranges.items():
+        cumsum += prob
+        if rand <= cumsum:
+            return random.randint(start, end - 1)
+            
+    last_range = list(ranges.values())[-1]
+    return random.randint(last_range[0], last_range[1] - 1)
+
+
+def generate_single_sudoku(difficulty_dict, seed=None):
+    difficulty = weighted_sample(difficulty_dict)
     puzzle, gt = generate_sudoku(difficulty=difficulty, seed=seed)
     logger = Logger(False)
     sudoku = Sudoku(puzzle)
@@ -331,9 +332,9 @@ def save_strings_to_jsonl(strings, output_file):
             f.write(json_line + '\n')
 
 
-def worker_function(worker_id, min_diff, max_diff, base_seed):
+def worker_function(worker_id, diff, base_seed):
     seed = base_seed + worker_id
-    result = generate_single_sudoku(min_diff, max_diff, seed=seed)
+    result = generate_single_sudoku(diff, seed=seed)
     return result
 
 def stream_save_result(result, file_path):
@@ -343,8 +344,7 @@ def stream_save_result(result, file_path):
 
 def parallel_generate_sudoku(
     sample_count,
-    min_difficulty,
-    max_difficulty,
+    difficulty,
     base_seed,
     output_file,
     num_processes=None
@@ -359,8 +359,7 @@ def parallel_generate_sudoku(
     
     worker = partial(
         worker_function,
-        min_diff=min_difficulty,
-        max_diff=max_difficulty,
+        diff=difficulty,
         base_seed=base_seed
     )
     
@@ -373,18 +372,20 @@ def parallel_generate_sudoku(
     pool.join()
 
 if __name__ == '__main__':
-    SAMPLE_COUNT = 100
+    SAMPLE_COUNT = 10
     # Difficulty refers to the number of empty cells in the Sudoku puzzle.
     # Warning: Higher difficulties (more than 50 empty cells) will exponentially increase the time to generate the puzzle.
-    MINIMUM_DIFFICULTY = 40
-    MAXIMUM_DIFFICULTY = 50
-    SEED = 3
+    DIFFICULTY = {
+        0.3: (0, 42),
+        0.65: (42, 53),
+        0.05: (53, 60),
+    }
+    SEED = 0
     OUTPUT_FILE = 'sudoku_data.jsonl'
     
     parallel_generate_sudoku(
         sample_count=SAMPLE_COUNT,
-        min_difficulty=MINIMUM_DIFFICULTY,
-        max_difficulty=MAXIMUM_DIFFICULTY,
+        difficulty=DIFFICULTY,
         base_seed=SEED,
         output_file=OUTPUT_FILE
     )
