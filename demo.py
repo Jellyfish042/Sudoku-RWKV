@@ -12,7 +12,7 @@ from generate_sudoku_data import generate_sudoku as gen
 
 SEED = None
 DEFAULT_DIFFICULTY = 55
-MODEL_PATH = 'sudoku_rwkv_241116.pth'
+MODEL_PATH = 'sudoku_rwkv_20241120.pth'
 
 
 class ModernSudokuGame:
