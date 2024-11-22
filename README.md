@@ -16,12 +16,12 @@ A specialized RWKV model for solving Sudoku puzzles.
 
 ## Model
 
-The current `sudoku_rwkv_241116.pth` model is a specialized RWKV-v6 model trained on 750k Sudoku samples (~14.4B tokens) specifically for solving Sudoku puzzles.
+The current `sudoku_rwkv_20241120.pth` model is a specialized RWKV-v6 model trained on 2M Sudoku samples (~39.2B tokens) specifically for solving Sudoku puzzles.
 
 Model specifications:
 - Parameters: ~12.7M
 - Vocabulary size: 133
-- Architecture: 8 layers, 256 dimensions
+- Architecture: 8 layers, 320 dimensions
 
 The model includes a simple improvement for better performance (see `model.py` line 372). Corresponding modifications were made in the inference code (`rwkv_model.py` lines 852, 893-896).
 
@@ -32,7 +32,7 @@ The model was trained using the [RWKV-LM](https://github.com/BlinkDL/RWKV-LM) re
 Hyperparameters:
 - `M_BSZ`: 48
 - `CTX_LEN`: 8192
-- `LR`: 8e-4 to 3e-5
+- `LR`: 12e-4 to 3e-5
 - `ADAM_EPS`: 1e-18
 - `ADAM_BETA1`: 0.9
 - `ADAM_BETA2`: 0.95
