@@ -9,6 +9,15 @@ from formatter import *
 from utils import solve_sudoku_gt
 from generate_sudoku_data import generate_sudoku as gen
 
+device = "cuda"
+try:
+    import torch
+    import torch_musa
+    if torch.musa.is_available():
+        device = "musa"
+except:
+    print("if you use MTGPU, please install torch_musa, or ignore it")
+
 
 SEED = None
 DEFAULT_DIFFICULTY = 55
@@ -569,7 +578,7 @@ class RWKVModel:
         from rwkv.utils import PIPELINE, PIPELINE_ARGS
         from rwkv.rwkv_tokenizer import TRIE_TOKENIZER
 
-        self.model = RWKV(model=MODEL_PATH, strategy="cuda fp16", verbose=False)
+        self.model = RWKV(model=MODEL_PATH, strategy=device+" fp16", verbose=False)
         self.pipeline = PIPELINE(self.model, "rwkv_vocab_v20230424")
         self.pipeline.tokenizer = TRIE_TOKENIZER("sudoku_vocab.txt")
         self.gen_args = PIPELINE_ARGS(top_k=1, alpha_frequency=0, alpha_presence=0, token_stop=[105])
